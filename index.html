@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>台球计分板</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- 引入字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- 引入图标 (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- 背景装饰 -->
+        <div class="bg-gradient"></div>
+
+        <!-- 阶段 1: 设置比赛 -->
+        <div id="setup-screen" class="screen active">
+            <header class="header">
+                <h1>新比赛</h1>
+                <p>设置玩家信息</p>
+            </header>
+
+            <div class="glass-panel setup-form">
+                <div class="input-group">
+                    <label>玩家人数</label>
+                    <div class="stepper">
+                        <button type="button" id="btn-decrease-players" class="icon-btn"><i
+                                class="ph ph-minus"></i></button>
+                        <span id="player-count">2</span>
+                        <button type="button" id="btn-increase-players" class="icon-btn"><i
+                                class="ph ph-plus"></i></button>
+                    </div>
+                </div>
+
+                <div id="player-inputs-container">
+                    <!-- 动态生成姓名输入框 -->
+                    <div class="input-group">
+                        <label>玩家 1</label>
+                        <input type="text" placeholder="输入姓名" value="玩家 1" class="player-name-input" data-index="0">
+                    </div>
+                    <div class="input-group">
+                        <label>玩家 2</label>
+                        <input type="text" placeholder="输入姓名" value="玩家 2" class="player-name-input" data-index="1">
+                    </div>
+                </div>
+
+                <button id="btn-start-match" class="btn-primary">开始比赛</button>
+            </div>
+        </div>
+
+        <!-- 阶段 2: 计分板 -->
+        <div id="scoreboard-screen" class="screen">
+            <header class="header scoreboard-header">
+                <div class="header-left">
+                    <button id="btn-end-match" class="icon-btn sm"><i class="ph ph-arrow-left"></i> 结束</button>
+                </div>
+                <h2>比赛进行中</h2>
+                <div class="header-right">
+                    <button id="btn-reset-scores" class="icon-btn sm"><i
+                            class="ph ph-arrow-counter-clockwise"></i></button>
+                </div>
+            </header>
+
+            <!-- 对阵列表容器 -->
+            <div id="matchups-list" class="matchups-grid">
+                <!-- 动态生成对阵卡片 -->
+            </div>
+
+            <footer class="stats-footer glass-panel">
+                <div id="match-summary">
+                    <!-- 动态统计信息 -->
+                </div>
+                <div id="player-details" class="detail-text">
+                    <!-- 详细得分 -->
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

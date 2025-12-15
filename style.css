@@ -1,0 +1,346 @@
+:root {
+    --bg-color: #0f172a;
+    --bg-gradient-start: #0f172a;
+    --bg-gradient-end: #1e293b;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-color: #10b981;
+    /* 台球绿 */
+    --accent-glow: rgba(16, 185, 129, 0.4);
+    --panel-bg: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --danger-color: #ef4444;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    height: 100vh;
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bg-gradient {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, #1e293b 0%, var(--bg-color) 100%);
+    z-index: -1;
+}
+
+#app {
+    height: 100%;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    padding: 24px;
+    animation: fadeIn 0.3s ease;
+    overflow-y: auto;
+    padding-bottom: 120px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 32px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.glass-panel {
+    background: var(--panel-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.setup-form {
+    padding: 24px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 14px;
+    width: fit-content;
+}
+
+#player-count {
+    font-size: 18px;
+    font-weight: 600;
+    min-width: 24px;
+    text-align: center;
+}
+
+.btn-primary {
+    width: 100%;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px var(--accent-glow);
+    transition: transform 0.1s;
+    margin-top: 16px;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.icon-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn i {
+    font-size: 20px;
+}
+
+.scoreboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.scoreboard-header h2 {
+    font-size: 18px;
+}
+
+.icon-btn.sm {
+    width: auto;
+    padding: 8px 12px;
+    font-size: 14px;
+    gap: 6px;
+}
+
+/* ======== 对阵列表样式 (Matchups) ======== */
+.matchups-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.matchup-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    /* Removing padding from card container, giving it to sides */
+    overflow: hidden;
+    position: relative;
+    border-radius: 16px;
+    /* Slightly tighter radius */
+}
+
+.matchup-side {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    /* Horizontal layout: Name Score */
+    align-items: center;
+    justify-content: space-between;
+    /* Space out name and score */
+    padding: 20px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+    user-select: none;
+}
+
+.matchup-side:active {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+/* Specific alignments */
+.matchup-side.left {
+    padding-right: 8px;
+}
+
+.matchup-side.right {
+    padding-left: 8px;
+    flex-direction: row-reverse;
+    /* Mirror layout for right side */
+}
+
+.matchup-name {
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    /* Name takes available space */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+}
+
+.matchup-side.right .matchup-name {
+    text-align: right;
+}
+
+.matchup-score {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent-color);
+    min-width: 40px;
+    text-align: center;
+    transition: transform 0.15s;
+}
+
+.matchup-divider {
+    color: var(--text-muted);
+    font-size: 20px;
+    font-weight: 300;
+    padding: 0 4px;
+}
+
+/* Minus Button inside matchup card */
+.matchup-btn-minus {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.matchup-btn-minus:active {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger-color);
+}
+
+
+/* ======== 底部统计栏样式 ======== */
+.stats-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 24px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    background: rgba(15, 23, 42, 0.95);
+    border-top: 1px solid var(--border-color);
+    z-index: 100;
+}
+
+#match-summary {
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 6px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+#player-details {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    text-align: center;
+    white-space: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+    /* Scrollbar spacing */
+}
