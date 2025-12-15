@@ -5,7 +5,6 @@
     --text-color: #f8fafc;
     --text-muted: #94a3b8;
     --accent-color: #10b981;
-    /* 台球绿 */
     --accent-glow: rgba(16, 185, 129, 0.4);
     --panel-bg: rgba(30, 41, 59, 0.7);
     --border-color: rgba(255, 255, 255, 0.1);
@@ -53,7 +52,7 @@ body {
     padding: 24px;
     animation: fadeIn 0.3s ease;
     overflow-y: auto;
-    padding-bottom: 120px;
+    padding-bottom: 220px;
 }
 
 .screen.active {
@@ -219,25 +218,27 @@ input[type="text"]:focus {
 
 .matchup-card {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0;
-    /* Removing padding from card container, giving it to sides */
+    flex-direction: column;
     overflow: hidden;
     position: relative;
     border-radius: 16px;
-    /* Slightly tighter radius */
+    padding-bottom: 12px;
+}
+
+.matchup-main-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
 .matchup-side {
     flex: 1;
     display: flex;
-    flex-direction: row;
-    /* Horizontal layout: Name Score */
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    /* Space out name and score */
-    padding: 20px 16px;
+    justify-content: center;
+    padding: 20px 10px;
     cursor: pointer;
     transition: background 0.2s;
     position: relative;
@@ -248,99 +249,170 @@ input[type="text"]:focus {
     background: rgba(16, 185, 129, 0.15);
 }
 
-/* Specific alignments */
-.matchup-side.left {
-    padding-right: 8px;
-}
-
-.matchup-side.right {
-    padding-left: 8px;
-    flex-direction: row-reverse;
-    /* Mirror layout for right side */
-}
-
 .matchup-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    flex: 1;
-    /* Name takes available space */
+    color: var(--text-color);
+    margin-bottom: 8px;
+    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 8px;
-}
-
-.matchup-side.right .matchup-name {
-    text-align: right;
+    width: 100%;
+    opacity: 0.9;
 }
 
 .matchup-score {
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 700;
+    line-height: 1;
+    transition: transform 0.15s, color 0.15s;
+}
+
+/* NEW: Winner/Loser Colors */
+.score-winner {
+    color: var(--danger-color);
+    /* Red */
+}
+
+.score-normal {
     color: var(--accent-color);
-    min-width: 40px;
-    text-align: center;
-    transition: transform 0.15s;
+    /* Green */
 }
 
 .matchup-divider {
     color: var(--text-muted);
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 300;
     padding: 0 4px;
+    margin-top: 10px;
 }
 
-/* Minus Button inside matchup card */
+.matchup-details {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
+    margin-top: -5px;
+}
+
+/* 美化的减号按钮 - Increased z-index */
 .matchup-btn-minus {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border: none;
+    position: absolute;
+    top: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+    z-index: 20;
+    /* Ensure clickable */
+}
+
+.matchup-side.left .matchup-btn-minus {
+    left: 8px;
+}
+
+.matchup-side.right .matchup-btn-minus {
+    right: 8px;
 }
 
 .matchup-btn-minus:active {
     background: rgba(239, 68, 68, 0.2);
+    border-color: var(--danger-color);
     color: var(--danger-color);
+    transform: scale(0.9);
 }
 
 
-/* ======== 底部统计栏样式 ======== */
+/* ======== 底部排行榜样式 ======== */
 .stats-footer {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 16px 24px;
+    padding: 16px 20px;
     padding-bottom: max(16px, env(safe-area-inset-bottom));
-    background: rgba(15, 23, 42, 0.95);
+    background: rgba(15, 23, 42, 0.98);
     border-top: 1px solid var(--border-color);
     z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    max-height: 45vh;
+    overflow-y: auto;
 }
 
 #match-summary {
-    font-size: 15px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 6px;
-    line-height: 1.4;
-    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-#player-details {
+.total-games-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.ranking-table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 13px;
+    color: var(--text-color);
+}
+
+.ranking-table th {
+    text-align: left;
     color: var(--text-muted);
-    line-height: 1.5;
+    font-weight: 500;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ranking-table td {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.ranking-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ranking-table .rank-1 {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.td-net {
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.td-total {
+    color: var(--text-muted);
+}
+
+.ranking-table th:nth-child(3),
+.ranking-table td:nth-child(3),
+.ranking-table th:nth-child(4),
+.ranking-table td:nth-child(4) {
     text-align: center;
-    white-space: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 4px;
-    /* Scrollbar spacing */
 }
