@@ -49,10 +49,11 @@ body {
     display: none;
     flex-direction: column;
     height: 100%;
-    padding: 24px;
+    padding: 12px;
+    /* Reduced from 24px */
     animation: fadeIn 0.3s ease;
     overflow-y: auto;
-    padding-bottom: 220px;
+    padding-bottom: 180px;
 }
 
 .screen.active {
@@ -73,12 +74,14 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 32px;
+    margin-bottom: 12px;
+    /* Reduced from 32px */
     flex-shrink: 0;
 }
 
 .header h1 {
-    font-size: 28px;
+    font-size: 20px;
+    /* Reduced from 28px */
     font-weight: 700;
     letter-spacing: -0.5px;
 }
@@ -213,7 +216,8 @@ input[type="text"]:focus {
 .matchups-grid {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
+    /* Reduced from 16px */
 }
 
 .matchup-card {
@@ -221,8 +225,10 @@ input[type="text"]:focus {
     flex-direction: column;
     overflow: hidden;
     position: relative;
-    border-radius: 16px;
-    padding-bottom: 12px;
+    border-radius: 12px;
+    /* Reduced radius */
+    padding-bottom: 6px;
+    /* Reduced padding */
 }
 
 .matchup-main-row {
@@ -238,7 +244,8 @@ input[type="text"]:focus {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px 10px;
+    padding: 12px 6px;
+    /* Reduced padding */
     cursor: pointer;
     transition: background 0.2s;
     position: relative;
@@ -263,7 +270,8 @@ input[type="text"]:focus {
 }
 
 .matchup-score {
-    font-size: 32px;
+    font-size: 26px;
+    /* Reduced from 32px */
     font-weight: 700;
     line-height: 1;
     transition: transform 0.15s, color 0.15s;
@@ -301,13 +309,17 @@ input[type="text"]:focus {
 /* 美化的减号按钮 - Increased z-index */
 .matchup-btn-minus {
     position: absolute;
-    top: 8px;
-    width: 32px;
-    height: 32px;
+    top: 4px;
+    /* Tighter */
+    width: 24px;
+    /* Smaller button */
+    height: 24px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.05);
     color: var(--text-muted);
+    font-size: 12px;
+    /* Smaller icon */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -319,11 +331,13 @@ input[type="text"]:focus {
 }
 
 .matchup-side.left .matchup-btn-minus {
-    left: 8px;
+    left: 4px;
+    /* Tighter */
 }
 
 .matchup-side.right .matchup-btn-minus {
-    right: 8px;
+    right: 4px;
+    /* Tighter */
 }
 
 .matchup-btn-minus:active {
@@ -340,8 +354,9 @@ input[type="text"]:focus {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 16px 20px;
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding: 10px 16px;
+    /* Reduced from 16px 20px */
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
     background: rgba(15, 23, 42, 0.98);
     border-top: 1px solid var(--border-color);
     z-index: 100;
@@ -351,12 +366,14 @@ input[type="text"]:focus {
 }
 
 #match-summary {
-    font-size: 14px;
+    font-size: 13px;
+    /* Reduced */
     font-weight: 700;
     color: var(--accent-color);
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    /* Reduced */
     text-align: left;
     display: flex;
     justify-content: space-between;
