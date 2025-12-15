@@ -35,13 +35,11 @@ class GameState {
     }
 
     setPlayers(names) {
-        // 1. Create Player Objects
         this.players = names.map((name, index) => ({
             id: index + 1,
             name: name || `玩家 ${index + 1}`
         }));
 
-        // 2. Generate Matchups (Combinations of 2)
         this.matchups = [];
         for (let i = 0; i < this.players.length; i++) {
             for (let j = i + 1; j < this.players.length; j++) {
@@ -101,30 +99,46 @@ class GameState {
         this.save();
     }
 
-    // Helper to get a specific player object
     getPlayer(id) {
         return this.players.find(p => p.id === id);
     }
 
-    // Derived Statistics
     getStats() {
         const totalGames = this.matchups.reduce((sum, m) => sum + m.score1 + m.score2, 0);
 
-        const playerStats = this.players.map(player => {
-            let totalScore = 0;
+        let playerStats = this.players.map(player => {
+            let wins = 0; // Total score
+            let losses = 0; // Opponent's score
+
             this.matchups.forEach(m => {
-                if (m.player1Id === player.id) totalScore += m.score1;
-                if (m.player2Id === player.id) totalScore += m.score2;
+                if (m.player1Id === player.id) {
+                    wins += m.score1;
+                    losses += m.score2;
+                }
+                if (m.player2Id === player.id) {
+                    wins += m.score2;
+                    losses += m.score1;
+                }
             });
+
             return {
                 name: player.name,
-                totalScore: totalScore
+                wins: wins,
+                losses: losses,
+                net: wins - losses,
+                total: wins + losses
             };
+        });
+
+        // Sort by Net Wins (desc), then by Total Wins (desc)
+        playerStats.sort((a, b) => {
+            if (b.net !== a.net) return b.net - a.net;
+            return b.wins - a.wins;
         });
 
         return {
             totalGames,
-            playerStats
+            ranking: playerStats
         };
     }
 }
@@ -134,7 +148,6 @@ class UIController {
         this.state = state;
         this.cacheDOM();
         this.bindEvents();
-
         this.initView();
     }
 
@@ -143,14 +156,12 @@ class UIController {
         this.setupScreen = document.getElementById('setup-screen');
         this.scoreboardScreen = document.getElementById('scoreboard-screen');
 
-        // Setup inputs
         this.playerCountEl = document.getElementById('player-count');
         this.btnIncPlayers = document.getElementById('btn-increase-players');
         this.btnDecPlayers = document.getElementById('btn-decrease-players');
         this.playerInputsContainer = document.getElementById('player-inputs-container');
         this.btnStart = document.getElementById('btn-start-match');
 
-        // Scoreboard
         this.matchupsList = document.getElementById('matchups-list');
         this.matchSummary = document.getElementById('match-summary');
         this.playerDetails = document.getElementById('player-details');
@@ -160,12 +171,10 @@ class UIController {
     }
 
     initView() {
-        // 1. Restore Setup Screen State
         const count = Math.max(2, this.state.players.length);
         this.playerCountEl.textContent = count;
         this.updatePlayerInputs(count);
 
-        // Fill names if they exist
         const inputs = this.playerInputsContainer.querySelectorAll('input');
         inputs.forEach((input, i) => {
             if (this.state.players[i]) {
@@ -173,7 +182,6 @@ class UIController {
             }
         });
 
-        // 2. If 'PLAYING', restore Scoreboard and switch
         if (this.state.status === 'PLAYING') {
             this.renderMatchups();
             this.updateStatsUI();
@@ -245,7 +253,7 @@ class UIController {
 
         this.state.setPlayers(names);
         this.state.status = 'PLAYING';
-        this.state.save(); // Explicit save
+        this.state.save();
 
         this.renderMatchups();
         this.updateStatsUI();
@@ -269,26 +277,48 @@ class UIController {
             const p1 = this.state.getPlayer(matchup.player1Id);
             const p2 = this.state.getPlayer(matchup.player2Id);
 
+            const total = matchup.score1 + matchup.score2;
+            const diff = Math.abs(matchup.score1 - matchup.score2);
+            let diffText = '';
+
+            // Color Logic
+            let p1Class = 'score-normal';
+            let p2Class = 'score-normal';
+            if (matchup.score1 > matchup.score2) {
+                diffText = `${p1.name} 净胜 ${diff} 局`;
+                p1Class = 'score-winner';
+            } else if (matchup.score2 > matchup.score1) {
+                diffText = `${p2.name} 净胜 ${diff} 局`;
+                p2Class = 'score-winner';
+            } else {
+                diffText = '平局';
+            }
+
             const card = document.createElement('div');
             card.className = 'matchup-card glass-panel';
 
             card.innerHTML = `
-                <div class="matchup-side left" onclick="gameUI.handleScore('${matchup.id}', ${p1.id}, 1)">
-                     <button class="matchup-btn-minus" onclick="event.stopPropagation(); gameUI.handleScore('${matchup.id}', ${p1.id}, -1)">
-                        <i class="ph ph-minus"></i>
-                    </button>
-                    <div class="matchup-name">${p1.name}</div>
-                    <div class="matchup-score" id="score-${matchup.id}-${p1.id}">${matchup.score1}</div>
+                <div class="matchup-main-row">
+                    <div class="matchup-side left" onclick="gameUI.handleScore('${matchup.id}', ${p1.id}, 1)">
+                        <button type="button" class="matchup-btn-minus" onclick="event.stopPropagation(); gameUI.handleScore('${matchup.id}', ${p1.id}, -1)">
+                            <i class="ph ph-minus"></i>
+                        </button>
+                        <div class="matchup-name">${p1.name}</div>
+                        <div class="matchup-score ${p1Class}" id="score-${matchup.id}-${p1.id}">${matchup.score1}</div>
+                    </div>
+                    
+                    <div class="matchup-divider">:</div>
+                    
+                    <div class="matchup-side right" onclick="gameUI.handleScore('${matchup.id}', ${p2.id}, 1)">
+                        <button type="button" class="matchup-btn-minus" onclick="event.stopPropagation(); gameUI.handleScore('${matchup.id}', ${p2.id}, -1)">
+                            <i class="ph ph-minus"></i>
+                        </button>
+                        <div class="matchup-name">${p2.name}</div>
+                        <div class="matchup-score ${p2Class}" id="score-${matchup.id}-${p2.id}">${matchup.score2}</div>
+                    </div>
                 </div>
-                
-                <div class="matchup-divider">:</div>
-                
-                <div class="matchup-side right" onclick="gameUI.handleScore('${matchup.id}', ${p2.id}, 1)">
-                    <button class="matchup-btn-minus" onclick="event.stopPropagation(); gameUI.handleScore('${matchup.id}', ${p2.id}, -1)">
-                        <i class="ph ph-minus"></i>
-                    </button>
-                    <div class="matchup-name">${p2.name}</div>
-                    <div class="matchup-score" id="score-${matchup.id}-${p2.id}">${matchup.score2}</div>
+                <div class="matchup-details" id="details-${matchup.id}">
+                    共对局 ${total} 场，${diffText}
                 </div>
             `;
             this.matchupsList.appendChild(card);
@@ -304,29 +334,51 @@ class UIController {
         }
 
         if (changed) {
-            const matchup = this.state.matchups.find(m => m.id === matchupId);
-            const score = (playerId === matchup.player1Id) ? matchup.score1 : matchup.score2;
-            const el = document.getElementById(`score-${matchupId}-${playerId}`);
-
-            if (el) {
-                el.textContent = score;
-                el.style.transform = 'scale(1.2) translateY(-2px)';
-                setTimeout(() => el.style.transform = 'scale(1) translateY(0)', 150);
-            }
-
+            // Full re-render to update colors and all stats correct
+            // (Simpler than individual DOM patching for colors)
+            this.renderMatchups();
             this.updateStatsUI();
         }
     }
 
     updateStatsUI() {
         const stats = this.state.getStats();
-        this.matchSummary.innerHTML = `共进行 <span style="color:var(--accent-color)">${stats.totalGames}</span> 局比赛`;
-        const details = stats.playerStats.map(p => `${p.name} ${p.totalScore}分`).join('，');
-        this.playerDetails.textContent = details;
+
+        let html = `
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>姓名</th>
+                        <th>净胜</th>
+                        <th>总局</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        stats.ranking.forEach((player, index) => {
+            let rowClass = '';
+            if (index === 0) rowClass = 'rank-1';
+
+            html += `
+                <tr class="${rowClass}">
+                    <td>${index + 1}</td>
+                    <td>${player.name}</td>
+                    <td class="td-net">${player.net > 0 ? '+' + player.net : player.net}</td>
+                    <td class="td-total">${player.total}</td>
+                </tr>
+            `;
+        });
+
+        html += `</tbody></table>`;
+
+        // Show Total Games in Title
+        this.matchSummary.innerHTML = `战况排行榜 <span class="total-games-badge">总对局 ${stats.totalGames}</span>`;
+        this.playerDetails.innerHTML = html;
     }
 }
 
-// Initialize
 const gameState = new GameState();
 const gameUI = new UIController(gameState);
 window.gameUI = gameUI;
